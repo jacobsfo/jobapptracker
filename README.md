@@ -1,2 +1,2 @@
 # jobapptracker
-# click here: https://shorturl.at/bhzCK
+# instructions: https://shorturl.at/bhzCK
