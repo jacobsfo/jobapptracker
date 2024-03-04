@@ -10,46 +10,13 @@ spreadsheet_name = "Jobs"
 worksheet_name = "2024"
 column1= "A"  # Change this to your desired column
 column2= "B"
-json_filename = "out.json"
+json_filename = "in.json"
 
 def authenticate_gspread():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name("/mnt/c/Users/jacob/Downloads/tensile-axon-405704-53761fe143ca.json", scope)
     gc = gspread.authorize(credentials)
     return gc
-#web scrape and push in stack
-#pop top stack
-def search_and_store(filename):
-    found_set = list()
-
-    file = open(filename,'r')
-
-    lines = file.readlines()
-    file.close()
-    for line in lines:
-        
-        found_set.append(line)
-
-    return found_set
-
-    
-
-# Example usage
-
-
-def update_json(file,res):
-    with open(file,'r') as json_file:
-        job_data=json.load(json_file)
-    json_file.close()
-    i=0
-    for job in job_data:
-        job['link']=res[i]
-        #print(res[i])
-        i+=1
-    with open(file,'w') as json_file:
-        json.dump(job_data,json_file,indent=2)
-    json_file.close()
-    
 
 def scrape_linkedin_saved_jobs(values_list):
     with open(json_filename,'r') as json_file:
@@ -58,10 +25,10 @@ def scrape_linkedin_saved_jobs(values_list):
     
     for job in job_data:
         now = datetime.now()
-        relative_time=job["time_ago"]
+        relative_time=job["date"]
         #print(relative_time)
         timestamp=""
-        if 'h ago' in relative_time:
+        if 'h ago' in relative_time and relative_time[0:11]!='Application':
             print("gere")
             hours_ago = int(relative_time.split('h')[0].split()[-1])
             timestamp = now - timedelta(hours=hours_ago)
@@ -74,7 +41,7 @@ def scrape_linkedin_saved_jobs(values_list):
                 date_str = timestamp.strftime("%m/%d/%Y")
                 values=[date_str,job["company"],job["title"],job["location"],job["link"]]
                 values_list.append((values))
-        if 'm ago' in relative_time:
+        if 'm ago' in relative_time and relative_time[0:11]!='Application': 
             
             minutes_ago = int(relative_time.split('m')[0].split()[-1])
             timestamp = now - timedelta(minutes=minutes_ago)
@@ -128,26 +95,17 @@ def add_date_to_sheet(gc,values_list):
     # Update the cell with today's date
     worksheet.update_cells(cell_list)
 
-    
-def remove_duplicates(input_list):
-    result_list = []
-    for item in input_list:
-        if item not in result_list:
-            result_list.append(item)
-    return result_list
+
 def main():
     gc = authenticate_gspread()
     today_date = datetime.now().strftime("%m/%d/%Y")
     #populate values_list with scrape f(x)
-    file="out.txt"
-    file2="out.json"
-    result_set = search_and_store(file)
-    print((result_set))
-    update_json(file2,remove_duplicates(result_set))
+   
+   
     values_list=[]
     scrape_linkedin_saved_jobs(values_list)
     #print(len(values_list[0]))
-    print(values_list)
+    print((values_list))
     add_date_to_sheet(gc,values_list)
 
     
