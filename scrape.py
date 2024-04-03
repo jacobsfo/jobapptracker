@@ -2,9 +2,9 @@ import json
 from bs4 import BeautifulSoup
 from bs4.element import Doctype, NavigableString
 
-
+from load import parent
 job_dict=dict()
-with open('job.json','r') as file:
+with open('/mnt/c/Users/jacob/jh2/jobapptracker/job.json','r') as file:
     jobs_data=json.load(file)
     
     
@@ -30,7 +30,7 @@ for i in range(10):
 json_data=[]
 for i in range(len(job_dict)):
     json_data.append(job_dict[str(i)])
-with open('in.json','w') as file:
+with open('/mnt/c/Users/jacob/jh2/jobapptracker/in.json','w') as file:
     json.dump(json_data,file,indent=4)
     
     

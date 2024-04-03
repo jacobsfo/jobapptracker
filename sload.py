@@ -24,7 +24,7 @@ def html_to_json(tag):
     }
 
 # Open and read the HTML file
-with open('/mnt/c/Users/jacob/jh2/jobapptracker/out.html', 'r') as file:
+with open('/mnt/c/Users/jacob/jh2/jobapptracker/simp.html', 'r') as file:
     html_content = file.read()
 
 # Parse the HTML content using BeautifulSoup
@@ -37,7 +37,7 @@ json_content = json.dumps(html_to_json(soup), indent=4)
 
 file.close()
 
-with open(parent +'/job.json','w') as file:
+with open(parent +'/simp.json','w') as file:
     file.write(json_content)
     
     

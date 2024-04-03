@@ -11,7 +11,7 @@ from load import parent
 worksheet_name = "2024"
 column1= "A"  # Change this to your desired column
 column2= "B"
-json_filename = "/mnt/c/Users/jacob/jh2/jobapptracker/in.json"
+json_filename = "/mnt/c/Users/jacob/jh2/jobapptracker/simp_in.json"
 
 def authenticate_gspread():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -28,31 +28,21 @@ def scrape_linkedin_saved_jobs(values_list):
         now = datetime.now()
         relative_time=job["date"]
         #print(relative_time)
-        timestamp=""
-        if 'h ago' in relative_time and relative_time[0:7]=='Applied':
-            print("gere")
-            hours_ago = int(relative_time.split('h')[0].split()[-1])
-            timestamp = now - timedelta(hours=hours_ago)
-            #print(timestamp)
-            # tss=datetime.strptime(str(timestamp),"%Y-%m-%d %H:%M:%S.%f")
         
-            if timestamp.date() == now.date():
-                # ts=tss.strftime("%H:%M:%S")    
-                #print(ts)
-                date_str = timestamp.strftime("%m/%d/%Y")
-                values=[date_str,job["company"],job["title"],job["location"],job["link"]]
-                values_list.append((values))
-        if 'm ago' in relative_time and relative_time[0:11]!='Application': 
-            
-            minutes_ago = relative_time.split('m')[0].split()[-1]
-            if minutes_ago.isdigit():
-                minutes_ago=int(minutes_ago)
-            else:
-                minutes_ago=0
-            timestamp = now - timedelta(minutes=minutes_ago)
-            date_str = timestamp.strftime("%m/%d/%Y")
+    
+       
+        # Parse the date string
+        date_object = datetime.strptime(relative_time, "%m/%d/%y")
+
+# Format the date object as "dd Month YYYY"
+        formatted_date = date_object.strftime("%d %B %Y")
+        if formatted_date == datetime.now().strftime("%d %B %Y"):
+            # ts=tss.strftime("%H:%M:%S")    
+            #print(ts)
+            date_str = datetime.now().strftime("%m/%d/%Y")
             values=[date_str,job["company"],job["title"],job["location"],job["link"]]
             values_list.append((values))
+       
         else:
             continue
 

@@ -1,0 +1,8 @@
+sudo service cron start
+sudo service cron stop
+sudo service --status-all
+rm *.json
+https://serverfault.com/questions/75580/cron-cant-lock-var-run-crond-pid-otherpid-may-be-3759
+-->
+sudo vi /var/run/crond.pid
+(repeat steps 1-4)

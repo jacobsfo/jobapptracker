@@ -11,7 +11,7 @@ from load import parent
 worksheet_name = "2024"
 column1= "A"  # Change this to your desired column
 column2= "B"
-json_filename = "/mnt/c/Users/jacob/jh2/jobapptracker/in.json"
+json_filename = "/mnt/c/Users/jacob/jh2/jobapptracker/dice_in.json"
 
 def authenticate_gspread():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -25,34 +25,24 @@ def scrape_linkedin_saved_jobs(values_list):
     json_file.close()
     
     for job in job_data:
-        now = datetime.now()
         relative_time=job["date"]
         #print(relative_time)
-        timestamp=""
-        if 'h ago' in relative_time and relative_time[0:7]=='Applied':
-            print("gere")
-            hours_ago = int(relative_time.split('h')[0].split()[-1])
-            timestamp = now - timedelta(hours=hours_ago)
-            #print(timestamp)
-            # tss=datetime.strptime(str(timestamp),"%Y-%m-%d %H:%M:%S.%f")
         
-            if timestamp.date() == now.date():
-                # ts=tss.strftime("%H:%M:%S")    
-                #print(ts)
-                date_str = timestamp.strftime("%m/%d/%Y")
-                values=[date_str,job["company"],job["title"],job["location"],job["link"]]
-                values_list.append((values))
-        if 'm ago' in relative_time and relative_time[0:11]!='Application': 
-            
-            minutes_ago = relative_time.split('m')[0].split()[-1]
-            if minutes_ago.isdigit():
-                minutes_ago=int(minutes_ago)
-            else:
-                minutes_ago=0
-            timestamp = now - timedelta(minutes=minutes_ago)
-            date_str = timestamp.strftime("%m/%d/%Y")
+        month, day, year = map(int, relative_time.split('-'))
+
+# Construct a datetime object
+        date_object = datetime(year, month, day)
+
+# Format the datetime object to desired format
+        formatted_date = date_object.strftime("%d %B %Y")
+        
+        if  formatted_date == (datetime.now()).strftime("%d %B %Y"):
+            # ts=tss.strftime("%H:%M:%S")    
+            print('h')
+            date_str = datetime.now().strftime("%m/%d/%Y")
             values=[date_str,job["company"],job["title"],job["location"],job["link"]]
             values_list.append((values))
+       
         else:
             continue
 
@@ -103,11 +93,23 @@ def add_date_to_sheet(gc,values_list):
 
 def main():
     gc = authenticate_gspread()
-    today_date = datetime.now().strftime("%m/%d/%Y")
     #populate values_list with scrape f(x)
    
    
     values_list=[]
+    try:
+        with open(json_filename, 'r') as json_file:
+            # Check if the file is empty
+            if json_file.read().strip() == '':
+                print("File is empty.")
+            else:
+                json_file.seek(0)  # Reset file pointer to the beginning
+                job_data = json.load(json_file)
+                print("JSON data loaded successfully.")
+    except FileNotFoundError:
+        print("File not found:", json_filename)
+    except json.decoder.JSONDecodeError as e:
+        print("Error loading JSON:", e)
     scrape_linkedin_saved_jobs(values_list)
     #print(len(values_list[0]))
     print((values_list))
